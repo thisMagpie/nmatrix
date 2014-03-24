@@ -19,7 +19,6 @@ for i in * ; do
     echo "$i"
 done;
 
-s = ""
 # Check to see whether the installer is zypper.
 # If so, then install necessary packages.
 if [ -x /usr/bin/zypper ] ; then
@@ -34,7 +33,6 @@ if [ -x /usr/bin/zypper ] ; then
     echo "Going to install the following packages:"
     echo "libatlas3 libatlas3-devel"
     sudo zypper in -f -y libatlas3 libatlas3-devel
-    s="opensuse"
 fi
 
 # Check to see whether the installer is yum.
@@ -49,7 +47,6 @@ if [ -f /usr/bin/yum ] ; then
     echo "Going to install the following packages:"
     echo "libatlas3 and libatlas3-devel."
     sudo yum install libatlas3 libatlas3-devel
-    "fedora"
 fi
 
 # Check to see whether the installer is yum.
@@ -76,10 +73,6 @@ if [ -f /usr/include/atlas ] ; then
     C_INCLUDE_PATH=/usr/include/atlas
 fi
 
-if [ uname -p = "x86_64" ] ; then
-    echo "64 Bit Processor"
-fi
-
 echo "Going into bash login shell..."
 echo "Downloading Ruby 2.1.1 "
 \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.1.1 --auto-dotfiles
@@ -87,13 +80,13 @@ echo "Downloading Ruby 2.1.1 "
 if [ -x $HOME/.rvm/bin ] ; then
     echo "rvm use ruby-2.1.1"
     source /home/magpie/.rvm/scripts/rvm
-    if [ -d $HOME/.rvm/gems/ruby-2.1.1/gems ]
+    if [ -d $HOME/.rvm/gems/ruby-2.1.1/gems ]; then
         cd $HOME/.rvm/gems/ruby-2.1.1/gems ;
         if [ ! -d $HOME/.rvm/gems/ruby-2.1.1/gems/narray ] ; then
-            git clone https://github.com/SciRuby/narray
-            if [ ! -d $HOME/.rvm/gems/ruby-2.1.1/gems/nmatrix ] ; then
-                git clone https://github.com/SciRuby/nmatrix
-            file
+            git clone https://github.com/SciRuby/narray.git
+        fi
+        if [ ! -d $HOME/.rvm/gems/ruby-2.1.1/gems/nmatrix ] ; then
+            git clone https://github.com/SciRuby/nmatrix.git
         fi
     fi
 fi
@@ -111,6 +104,8 @@ if [ -f $PWD/narray/extconf.rb ] ; then
     echo "Installing ..."
     cd narray/
     ruby extconf.rb
+    make
+    make install
 fi
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
