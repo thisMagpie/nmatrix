@@ -108,6 +108,10 @@ if [ -f $PWD/narray/extconf.rb ] ; then
     make install
 fi
 
+if [ -x /bin/bash ] ; then
+    . /bin/bash --login
+fi
+
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
 
 echo "                                                  "
