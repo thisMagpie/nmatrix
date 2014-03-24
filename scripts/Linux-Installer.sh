@@ -91,6 +91,15 @@ if [ -x $HOME/.rvm/bin ] ; then
     fi
 fi
 
+if [ -f $PWD/narray/extconf.rb ] ; then
+    echo "Installing ..."
+    cd narray/
+    ruby extconf.rb
+    make
+    make install
+    cd ..
+fi
+
 # If gem has a Gemfile then it will be installed
 if [ -f  nmatrix/Gemfile ] ; then
     cd nmatrix
@@ -98,18 +107,6 @@ if [ -f  nmatrix/Gemfile ] ; then
     bundle exec rake compile
     bundle exec rake spec
     cd ..
-fi
-
-if [ -f $PWD/narray/extconf.rb ] ; then
-    echo "Installing ..."
-    cd narray/
-    ruby extconf.rb
-    make
-    make install
-fi
-
-if [ -x /bin/bash ] ; then
-    . /bin/bash --login
 fi
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
@@ -126,7 +123,5 @@ echo "                    ~~~~~~~  ~~ ~~~ ~~~~~ ~~~~~~  "
 echo "                  +-------------+-#-+------------+"
 echo "                   ______~_~*~~_{{_}}_~~*~_~_____ "
 echo "                  +------------------------------+"
-echo "                                                  "
-echo "                                                  "
 echo "                                                  "
 echo "                                                  "
