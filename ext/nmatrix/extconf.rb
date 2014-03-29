@@ -59,6 +59,26 @@ SRC
   return true
 end
 
+if ( ! ( have_header("fftw3.h") && have_library("fftw3") ) ) then
+   print <<EOS
+   ** configure error **
+   Header fftw3.h or the compiled fftw3 library is not found.
+   If you have the library installed under /fftw3dir (that is, fftw3.h is
+   in /fftw3dir/include and the library in /fftw3dir/lib/),
+   try the following:
+
+   % ruby extconf.rb --with-fftw3-dir=/fftw3dir
+
+   Alternatively, you can specify the two directory separately
+   with --with-fftw3-include and --with-fftw3-lib.
+EOS
+   exit(-1)
+end
+
+if have_library("fftw3f")
+  $CFLAGS += ' -DFFTW3_HAS_SINGLE_SUPPORT'
+end
+
 # Function derived from NArray's extconf.rb.
 def create_conf_h(file) #:nodoc:
   print "creating #{file}\n"
@@ -97,12 +117,12 @@ if /cygwin|mingw/ =~ RUBY_PLATFORM
 end
 
 $DEBUG = true
-$CFLAGS = ["-Wall -Werror=return-type",$CFLAGS].join(" ")
+$CFLAGS += ["-Wall -Werror=return-type",$CFLAGS].join(" ")
 $CXXFLAGS = ["-Wall -Werror=return-type",$CXXFLAGS].join(" ")
 $CPPFLAGS = ["-Wall -Werror=return-type",$CPPFLAGS].join(" ")
 
 # When adding objects here, make sure their directories are included in CLEANOBJS down at the bottom of extconf.rb.
-basenames = %w{nmatrix ruby_constants data/data util/io math util/sl_list storage/common storage/storage storage/dense/dense storage/yale/yale storage/list/list}
+basenames = %w{nmatrix ruby_constants fft data/data util/io math util/sl_list storage/common storage/storage storage/dense/dense storage/yale/yale storage/list/list}
 $objs = basenames.map { |b| "#{b}.o"   }
 $srcs = basenames.map { |b| "#{b}.cpp" }
 
