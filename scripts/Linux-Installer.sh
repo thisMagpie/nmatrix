@@ -27,12 +27,12 @@ if [ -x /usr/bin/zypper ] ; then
     echo "Going to install the following packages:"
     echo "gcc gcc-c++ curl and cpupower."
     echo "Login as root, now..."
-    sudo zypper in -f -y gcc gcc gcc-c++ curl cpupower
+    sudo zypper in -y gcc gcc gcc-c++ curl cpupower
     sudo cpupower frequency-set -g performance
     echo
     echo "Going to install the following packages:"
     echo "libatlas3 libatlas3-devel"
-    sudo zypper in -f -y libatlas3 libatlas3-devel
+    sudo zypper in -y libatlas3 libatlas3-devel
 fi
 
 # Check to see whether the installer is yum.
@@ -91,15 +91,6 @@ if [ -x $HOME/.rvm/bin ] ; then
     fi
 fi
 
-if [ -f $PWD/narray/extconf.rb ] ; then
-    echo "Installing ..."
-    cd narray/
-    ruby extconf.rb
-    make
-    make install
-    cd ..
-fi
-
 # If gem has a Gemfile then it will be installed
 if [ -f  nmatrix/Gemfile ] ; then
     cd nmatrix
@@ -109,8 +100,17 @@ if [ -f  nmatrix/Gemfile ] ; then
     cd ..
 fi
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
+if [ -f $PWD/narray/extconf.rb ] ; then
+    echo "Installing ..."
+    cd narray/
+    ruby extconf.rb
+    make
+    make install
+    cd ..
+fi
 
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
+pry -r 'nmatrix'
 echo "                                                  "
 echo "                                                  "
 echo "                  +------------------------------+"
@@ -118,11 +118,10 @@ echo "                   ((((((((((((((())))))))))))))) "
 echo "                  +------------------------------+"
 echo "                   ------------------------------ "
 echo "                                                  "
-echo "                    Welcome, to the Login SHELL!  "
+echo "                    Running Pry...."
 echo "                    ~~~~~~~  ~~ ~~~ ~~~~~ ~~~~~~  "
 echo "                  +-------------+-#-+------------+"
 echo "                   ______~_~*~~_{{_}}_~~*~_~_____ "
 echo "                  +------------------------------+"
 echo "                                                  "
 echo "                                                  "
-pry
