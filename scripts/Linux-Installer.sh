@@ -27,12 +27,12 @@ if [ -x /usr/bin/zypper ] ; then
     echo "Going to install the following packages:"
     echo "gcc gcc-c++ curl and cpupower."
     echo "Login as root, now..."
-    sudo zypper in -y gcc gcc gcc-c++ curl cpupower
+    sudo zypper in -y gcc gcc-c++ curl cpupower
     sudo cpupower frequency-set -g performance
     echo
     echo "Going to install the following packages:"
-    echo "libatlas3 libatlas3-devel"
-    sudo zypper in -y libatlas3 libatlas3-devel
+    echo "libatlas3 libatlas3-devel typelib-1_0-GstFft-1_0"
+    sudo zypper in -y libatlas3 libatlas3-devel typelib-1_0-GstFft-1_0
 fi
 
 # Check to see whether the installer is yum.
@@ -41,7 +41,7 @@ if [ -f /usr/bin/yum ] ; then
     source ~/.bashrc
     echo ""
     echo "Login as root, now..."
-    sudo yum install gcc gcc gcc-c++ curl cpupower
+    sudo yum install gcc gcc-c++ curl cpupower
     sudo cpupower frequency-set -g performance
     echo
     echo "Going to install the following packages:"
@@ -55,7 +55,7 @@ if [ -f /usr/bin/apt-get ] ; then
     echo ""
     source ~/.bash_profile
     echo "Login as root, now..."
-    sudo apt-get install gcc gcc gcc-c++ curl cpupower
+    sudo apt-get install gcc gcc-c++ curl cpupower
     sudo cpupower frequency-set -g performance
     echo
     echo "Going to install the following packages:"
@@ -66,11 +66,18 @@ fi
 echo "Installation for $s complete!"
 echo "Setting PATHS"
 
-if [ -f /usr/include/atlas ] ; then
+if [ -d /usr/include/atlas ] ; then
     echo "Setting CPLUS_INCLUDE_PATH..."
-    CPLUS_INCLUDE_PATH=/usr/include/atlas
+    CPLUS_INCLUDE_PATH+=/usr/include/atlas
     echo "Setting C_INCLUDE_PATH..."
-    C_INCLUDE_PATH=/usr/include/atlas
+    C_INCLUDE_PATH+=/usr/include/atlas
+fi
+
+if [ -f /usr/include/ ] ; then
+    echo "Setting CPLUS_INCLUDE_PATH..."
+    CPLUS_INCLUDE_PATH+=/usr/include/atlas
+    echo "Setting C_INCLUDE_PATH..."
+    C_INCLUDE_PATH+=/usr/include/atlas
 fi
 
 echo "Going into bash login shell..."
@@ -82,9 +89,6 @@ if [ -x $HOME/.rvm/bin ] ; then
     source /home/magpie/.rvm/scripts/rvm
     if [ -d $HOME/.rvm/gems/ruby-2.1.1/gems ]; then
         cd $HOME/.rvm/gems/ruby-2.1.1/gems ;
-        if [ ! -d $HOME/.rvm/gems/ruby-2.1.1/gems/narray ] ; then
-            git clone https://github.com/SciRuby/narray.git
-        fi
         if [ ! -d $HOME/.rvm/gems/ruby-2.1.1/gems/nmatrix ] ; then
             git clone https://github.com/SciRuby/nmatrix.git
         fi
@@ -97,15 +101,6 @@ if [ -f  nmatrix/Gemfile ] ; then
     echo "bundle install"
     bundle exec rake compile
     bundle exec rake spec
-    cd ..
-fi
-
-if [ -f $PWD/narray/extconf.rb ] ; then
-    echo "Installing ..."
-    cd narray/
-    ruby extconf.rb
-    make
-    make install
     cd ..
 fi
 
