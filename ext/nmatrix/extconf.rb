@@ -59,25 +59,6 @@ SRC
   return true
 end
 
-if ( ! ( have_header("fftw3.h") && have_library("fftw3") ) ) then
-   print <<EOS
-   ** configure error **
-   Header fftw3.h or the compiled fftw3 library is not found.
-   If you have the library installed under /fftw3dir (that is, fftw3.h is
-   in /fftw3dir/include and the library in /fftw3dir/lib/),
-   try the following:
-
-   % ruby extconf.rb --with-fftw3-dir=/fftw3dir
-
-   Alternatively, you can specify the two directory separately
-   with --with-fftw3-include and --with-fftw3-lib.
-EOS
-   exit(-1)
-end
-
-if have_library("fftw3f")
-  $CFLAGS += ' -DFFTW3_HAS_SINGLE_SUPPORT'
-end
 
 # Function derived from NArray's extconf.rb.
 def create_conf_h(file) #:nodoc:
@@ -194,7 +175,8 @@ end
 
 idefaults = {lapack: ["/usr/include/atlas"],
              cblas: ["/usr/local/atlas/include", "/usr/include/atlas"],
-             atlas: ["/usr/local/atlas/include", "/usr/include/atlas"]}
+             atlas: ["/usr/local/atlas/include", "/usr/include/atlas"],
+             fftw3: ["/usr/include"]}
 
 # For some reason, if we try to look for /usr/lib64/atlas on a Mac OS X Mavericks system, and the directory does not
 # exist, it will give a linker error -- even if the lib dir is already correctly included with -L. So we need to check
@@ -219,6 +201,11 @@ unless have_library("atlas")
   dir_config("atlas", idefaults[:atlas], ldefaults[:atlas])
 end
 
+if have_library("fftw3")
+  $CFLAGS += ' -DFFTW3_HAS_SINGLE_SUPPORT'
+  dir_config("fftw3", idefaults[:fftw3], ldefaults[:fftw3])
+end
+
 # If BLAS and LAPACK headers are in an atlas directory, prefer those. Otherwise,
 # we try our luck with the default location.
 if have_header("atlas/cblas.h")
@@ -241,7 +228,7 @@ have_func("cblas_dgemm", "cblas.h")
 #find_library("cblas", "cblas_dgemm")
 #find_library("atlas", "ATL_dgemmNN")
 # Order matters here: ATLAS has to go after LAPACK: http://mail.scipy.org/pipermail/scipy-user/2007-January/010717.html
-$libs += " -llapack -lcblas -latlas "
+$libs += " -llapack -lcblas -latlas -lfftw3"
 #$libs += " -lprofiler "
 
 
@@ -265,6 +252,7 @@ Dir.chdir("storage") do
   Dir.mkdir("yale")  unless Dir.exists?("yale")
   Dir.mkdir("list")  unless Dir.exists?("list")
   Dir.mkdir("dense") unless Dir.exists?("dense")
+  Dir.mkdir("fft") unless Dir.exists?("fft")
 end
 
 # to clean up object files in subdirectories:
