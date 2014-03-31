@@ -44,7 +44,7 @@ EOF
   gem.required_ruby_version = '>= 1.9'
 
   gem.add_dependency 'rdoc', '>=4.0.1'
-  #gem.add_dependency 'yard'
+  gem.add_development_dependency 'yard'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'bundler'
   gem.add_development_dependency 'rspec'
