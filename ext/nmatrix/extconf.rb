@@ -176,14 +176,15 @@ end
 idefaults = {lapack: ["/usr/include/atlas"],
              cblas: ["/usr/local/atlas/include", "/usr/include/atlas"],
              atlas: ["/usr/local/atlas/include", "/usr/include/atlas"],
-             fftw3: ["/usr/include"]}
+             fftw3: ["/usr/local", "/usr/include"]}
 
 # For some reason, if we try to look for /usr/lib64/atlas on a Mac OS X Mavericks system, and the directory does not
 # exist, it will give a linker error -- even if the lib dir is already correctly included with -L. So we need to check
-# that Dir.exists?(d) for each.
+# that Dir.exists?(d) for each
 ldefaults = {lapack: ["/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib64/atlas"].delete_if { |d| !Dir.exists?(d) },
              cblas: ["/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib64/atlas"].delete_if { |d| !Dir.exists?(d) },
-             atlas: ["/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib", "/usr/lib64/atlas"].delete_if { |d| !Dir.exists?(d) }}
+             atlas: ["/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib", "/usr/lib64/atlas"].delete_if { |d| !Dir.exists?(d) },
+             fftw3: ["/usr/local/lib", "/usr/local/lib64", "/usr/lib64"].delete_if { |d| !Dir.exists?(d) } }
 
 if have_library("clapack") # Usually only applies for Mac OS X
   $libs += " -lclapack "
@@ -257,6 +258,6 @@ end
 
 # to clean up object files in subdirectories:
 open('Makefile', 'a') do |f|
-  clean_objs_paths = %w{data storage storage/dense storage/yale storage/list util}.map { |d| "#{d}/*.#{CONFIG["OBJEXT"]}" }
+  clean_objs_paths = %w{data storage storage/dense storage/yale storage/list util fft}.map { |d| "#{d}/*.#{CONFIG["OBJEXT"]}" }
   f.write("CLEANOBJS := $(CLEANOBJS) #{clean_objs_paths.join(' ')}")
 end
