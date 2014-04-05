@@ -106,8 +106,6 @@ basenames = %w{nmatrix ruby_constants fft data/data util/io math util/sl_list st
 $objs = basenames.map { |b| "#{b}.o"   }
 $srcs = basenames.map { |b| "#{b}.cpp" }
 
-CONFIG['CXX'] = 'g++'
-
 def find_newer_gplusplus #:nodoc:
   print "checking for apparent GNU g++ binary with C++0x/C++11 support... "
   [9,8,7,6,5,4,3].each do |minor|
@@ -136,7 +134,6 @@ end
 
 if CONFIG['CXX'] == 'clang++'
   $CPP_STANDARD = 'c++11'
-
 else
   version = gplusplus_version
   if version < '4.3.0' && CONFIG['CXX'] == 'g++'  # see if we can find a newer G++, unless it's been overridden by user
