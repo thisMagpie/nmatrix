@@ -12,12 +12,7 @@
 #     Contact:
 #              <m.berns@thismagpie.com>
 
-echo ""
-echo "Install scripts available:"
-echo ""
-for i in * ; do
-    echo "$i"
-done;
+directory=`pwd`
 
 # Check to see whether the installer is zypper.
 # If so, then install necessary packages.
@@ -31,13 +26,9 @@ if [ -x /usr/bin/zypper ] ; then
     sudo cpupower frequency-set -g performance
     echo
     echo "Going to install the following packages:"
-    echo "libatlas3 libatlas3-devel typelib-1_0-GstFft-1_0 fftw3 fftw3-devel"
-    sudo zypper in -y libatlas3 libatlas3-devel typelib-1_0-GstFft-1_0 fftw3 fftw3-devel
-fi
-
-# Check to see whether the installer is yum.
-# If so, then install necessary packages.
-if [ -f /usr/bin/yum ] ; then
+    echo "libatlas3 libatlas3-devel"
+    sudo zypper in -y libatlas3 libatlas3-devel
+elif [ -f /usr/bin/yum ] ; then
     source ~/.bashrc
     echo ""
     echo "Login as root, now..."
@@ -49,7 +40,7 @@ if [ -f /usr/bin/yum ] ; then
     sudo yum install libatlas3 libatlas3-devel
 fi
 
-# Check to see whether the installer is yum.
+# Check to see whether the installer is apt-get
 # If so, then install necessary packages.
 if [ -f /usr/bin/apt-get ] ; then
     echo ""
@@ -73,7 +64,6 @@ if [ -d /usr/include/atlas ] ; then
     C_INCLUDE_PATH+=/usr/include/atlas
 fi
 
-echo "Going into bash login shell..."
 echo "Downloading Ruby 2.1.1 "
 \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.1.1 --auto-dotfiles
 
@@ -88,32 +78,18 @@ if [ -x $HOME/.rvm/bin ] ; then
     fi
 fi
 
-if [ -f  /bin/bash ] ; then
-    /bin/bash --login
-    echo "source $HOME/.rvm/scripts/rvm"
-    rvm use ruby-2.1.1
-fi
+cd $directory
 
 # If gem has a Gemfile then it will be installed
 if [ -f  nmatrix/Gemfile ] ; then
     cd nmatrix
-    echo $PWD
     bundle install
     bundle exec rake compile
     bundle exec rake spec
 fi
-pry
-echo "                                                  "
-echo "                                                  "
-echo "                  +------------------------------+"
-echo "                   ((((((((((((((())))))))))))))) "
-echo "                  +------------------------------+"
-echo "                   ------------------------------ "
-echo "                                                  "
-echo "                    Running Pry...."
-echo "                    ~~~~~~~  ~~ ~~~ ~~~~~ ~~~~~~  "
-echo "                  +-------------+-#-+------------+"
-echo "                   ______~_~*~~_{{_}}_~~*~_~_____ "
-echo "                  +------------------------------+"
-echo "                                                  "
-echo "                                                  "
+
+if [ -f  /bin/bash ] ; then
+    /bin/bash --login
+    rvm use ruby-2.1.1
+    source $HOME/.rvm/scripts/rvm
+fi
