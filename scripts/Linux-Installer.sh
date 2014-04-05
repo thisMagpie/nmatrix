@@ -31,8 +31,8 @@ if [ -x /usr/bin/zypper ] ; then
     sudo cpupower frequency-set -g performance
     echo
     echo "Going to install the following packages:"
-    echo "libatlas3 libatlas3-devel typelib-1_0-GstFft-1_0"
-    sudo zypper in -y libatlas3 libatlas3-devel typelib-1_0-GstFft-1_0
+    echo "libatlas3 libatlas3-devel typelib-1_0-GstFft-1_0 fftw3 fftw3-devel"
+    sudo zypper in -y libatlas3 libatlas3-devel typelib-1_0-GstFft-1_0 fftw3 fftw3-devel
 fi
 
 # Check to see whether the installer is yum.
@@ -73,13 +73,6 @@ if [ -d /usr/include/atlas ] ; then
     C_INCLUDE_PATH+=/usr/include/atlas
 fi
 
-if [ -f /usr/include/ ] ; then
-    echo "Setting CPLUS_INCLUDE_PATH..."
-    CPLUS_INCLUDE_PATH+=/usr/include/atlas
-    echo "Setting C_INCLUDE_PATH..."
-    C_INCLUDE_PATH+=/usr/include/atlas
-fi
-
 echo "Going into bash login shell..."
 echo "Downloading Ruby 2.1.1 "
 \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.1.1 --auto-dotfiles
@@ -95,17 +88,21 @@ if [ -x $HOME/.rvm/bin ] ; then
     fi
 fi
 
+if [ -f  /bin/bash ] ; then
+    /bin/bash --login
+    echo "source $HOME/.rvm/scripts/rvm"
+    rvm use ruby-2.1.1
+fi
+
 # If gem has a Gemfile then it will be installed
 if [ -f  nmatrix/Gemfile ] ; then
     cd nmatrix
-    echo "bundle install"
+    echo $PWD
+    bundle install
     bundle exec rake compile
     bundle exec rake spec
-    cd ..
 fi
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
-pry -r 'nmatrix'
+pry
 echo "                                                  "
 echo "                                                  "
 echo "                  +------------------------------+"

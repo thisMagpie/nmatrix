@@ -51,5 +51,6 @@ EOF
   gem.add_development_dependency 'rspec-longrun'
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'rake-compiler', '~>0.8.1'
+  gem.add_development_dependency 'atomic'
 end
 
