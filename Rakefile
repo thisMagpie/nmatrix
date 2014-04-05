@@ -46,7 +46,7 @@ VALGRIND_OPTIONS = [
     "--num-callers=15",
     "--error-limit=no",
     "--partial-loads-ok=yes",
-    "--undef-value-errors=no" #,
+    "--undef-value-errors=no",
     "--dsymutil=yes"
 ]
 
@@ -60,7 +60,7 @@ CALLGRIND_OPTIONS = [
 VALGRIND_MEMORYFILL_OPTIONS = [
     "--freelist-vol=100000000",
     "--malloc-fill=6D",
-    "--free-fill=66 ",
+    "--free-fill=66 "
 ]
 
 GDB_OPTIONS = []
@@ -211,5 +211,3 @@ RDoc::Task.new do |rdoc|
   rdoc.main = "README.rdoc"
   rdoc.rdoc_files.include(%w{README.rdoc History.txt LICENSE.txt CONTRIBUTING.md ext/nmatrix/binary_format.txt lib/nmatrix/**/*.rb ext/nmatrix/**/*.cpp ext/nmatrix/**/*.c ext/nmatrix/**/*.h})
 end
-
-vim: syntax=ruby
