@@ -73,13 +73,6 @@ if [ -d /usr/include/atlas ] ; then
     C_INCLUDE_PATH+=/usr/include/atlas
 fi
 
-if [ -f /usr/include/ ] ; then
-    echo "Setting CPLUS_INCLUDE_PATH..."
-    CPLUS_INCLUDE_PATH+=/usr/include/atlas
-    echo "Setting C_INCLUDE_PATH..."
-    C_INCLUDE_PATH+=/usr/include/atlas
-fi
-
 echo "Going into bash login shell..."
 echo "Downloading Ruby 2.1.1 "
 \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.1.1 --auto-dotfiles
@@ -108,10 +101,8 @@ if [ -f  nmatrix/Gemfile ] ; then
     bundle install
     bundle exec rake compile
     bundle exec rake spec
-    cd ..
 fi
-
-echo "pry"
+pry
 echo "                                                  "
 echo "                                                  "
 echo "                  +------------------------------+"
