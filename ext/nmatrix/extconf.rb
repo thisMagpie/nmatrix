@@ -37,6 +37,7 @@ def have_type(type, header=nil) #:nodoc:
 #include <ruby.h>
 SRC
 
+
   src << <<"SRC" unless header.nil?
 #include <#{header}>
 SRC
@@ -57,7 +58,6 @@ SRC
 
   return true
 end
-
 
 # Function derived from NArray's extconf.rb.
 def create_conf_h(file) #:nodoc:
@@ -97,14 +97,17 @@ if /cygwin|mingw/ =~ RUBY_PLATFORM
 end
 
 $DEBUG = true
-$CFLAGS += ["-Wall -Werror=return-type",$CFLAGS].join(" ")
+$CFLAGS = ["-Wall -Werror=return-type",$CFLAGS].join(" ")
 $CXXFLAGS = ["-Wall -Werror=return-type",$CXXFLAGS].join(" ")
 $CPPFLAGS = ["-Wall -Werror=return-type",$CPPFLAGS].join(" ")
 
 # When adding objects here, make sure their directories are included in CLEANOBJS down at the bottom of extconf.rb.
-basenames = %w{nmatrix ruby_constants fft data/data util/io math util/sl_list storage/common storage/storage storage/dense/dense storage/yale/yale storage/list/list}
+basenames = %w{nmatrix ruby_constants data/data util/io math util/sl_list storage/common storage/storage storage/dense/dense storage/yale/yale storage/list/list}
 $objs = basenames.map { |b| "#{b}.o"   }
 $srcs = basenames.map { |b| "#{b}.cpp" }
+
+#CONFIG['CXX'] = 'clang++'
+CONFIG['CXX'] = 'g++'
 
 def find_newer_gplusplus #:nodoc:
   print "checking for apparent GNU g++ binary with C++0x/C++11 support... "
@@ -134,6 +137,7 @@ end
 
 if CONFIG['CXX'] == 'clang++'
   $CPP_STANDARD = 'c++11'
+
 else
   version = gplusplus_version
   if version < '4.3.0' && CONFIG['CXX'] == 'g++'  # see if we can find a newer G++, unless it's been overridden by user
@@ -159,56 +163,51 @@ end
 # for ATLAS. The same for all the others
 #
 #dir_config("clapack", ["/usr/local/atlas/include"], [])
-
+#
+#
 
 # Is g++ having trouble finding your header files?
 # Try this:
 #   export C_INCLUDE_PATH=/usr/local/atlas/include
 #   export CPLUS_INCLUDE_PATH=/usr/local/atlas/include
 # (substituting in the path of your cblas.h and clapack.h for the path I used). -- JW 8/27/12
+
 idefaults = {lapack: ["/usr/include/atlas"],
              cblas: ["/usr/local/atlas/include", "/usr/include/atlas"],
              atlas: ["/usr/local/atlas/include", "/usr/include/atlas"]}
 
 # For some reason, if we try to look for /usr/lib64/atlas on a Mac OS X Mavericks system, and the directory does not
 # exist, it will give a linker error -- even if the lib dir is already correctly included with -L. So we need to check
-# that Dir.exists?(d) for each
-ldefaults = {lapack: ["/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib64/atlas", "/usr/lib"].delete_if { |d| !Dir.exists?(d) },
+# that Dir.exists?(d) for each.
+ldefaults = {lapack: ["/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib64/atlas"].delete_if { |d| !Dir.exists?(d) },
              cblas: ["/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib64/atlas"].delete_if { |d| !Dir.exists?(d) },
              atlas: ["/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib", "/usr/lib64/atlas"].delete_if { |d| !Dir.exists?(d) }}
 
+if have_library("clapack") # Usually only applies for Mac OS X
+  $libs += " -lclapack "
+end
+
 unless have_library("lapack")
-  dir_config("lapack", *ldefaults[:lapack])
+  dir_config("lapack", idefaults[:lapack], ldefaults[:lapack])
 end
 
 unless have_library("cblas")
-  dir_config("cblas", 
-  idefaults[:cblas], ldefaults[:cblas])
+  dir_config("cblas", idefaults[:cblas], ldefaults[:cblas])
 end
 
 unless have_library("atlas")
   dir_config("atlas", idefaults[:atlas], ldefaults[:atlas])
 end
 
-unless have_library("fftw3")
-  dir_config("fftw3", '/usr/lib')
-end
-
-unless have_header("fftw3.h")
-  find_header("fftw3.h", '/usr/include')
-end
-
-
 # If BLAS and LAPACK headers are in an atlas directory, prefer those. Otherwise,
 # we try our luck with the default location.
-
-
-unless have_header("atlas/cblas.h")
-  find_header("cblas.h", *idefaults[:cblas])
+if have_header("atlas/cblas.h")
+  have_header("atlas/clapack.h")
+else
+  have_header("cblas.h")
+  have_header("clapack.h")
 end
-unless have_header("clapack.h")
-  find_header("lapack.h", *idefaults[:lapack])
-end
+
 
 have_func("clapack_dgetrf", ["cblas.h", "clapack.h"])
 have_func("clapack_dgetri", ["cblas.h", "clapack.h"])
@@ -216,12 +215,23 @@ have_func("dgesvd_", "clapack.h") # This may not do anything. dgesvd_ seems to b
 
 have_func("cblas_dgemm", "cblas.h")
 
+#have_func("rb_scan_args", "ruby.h")
+
+#find_library("lapack", "clapack_dgetrf")
+#find_library("cblas", "cblas_dgemm")
+#find_library("atlas", "ATL_dgemmNN")
 # Order matters here: ATLAS has to go after LAPACK: http://mail.scipy.org/pipermail/scipy-user/2007-January/010717.html
-$libs += " -llapack -lcblas -latlas -lfftw3"
+$libs += " -llapack -lcblas -latlas "
+#$libs += " -lprofiler "
 
-$CFLAGS += " -O3 -g"
-$CPPFLAGS += " -O3 -std=#{$CPP_STANDARD}" #" -O0 -g -std=#{$CPP_STANDARD} " #-fmax-errors=10 -save-temps
 
+# For release, these next two should both be changed to -O3.
+$CFLAGS += " -O3 -g" #" -O0 -g "
+#$CFLAGS += " -static -O0 -g "
+$CPPFLAGS += " -O3 -std=#{$CPP_STANDARD} -g" #" -O0 -g -std=#{$CPP_STANDARD} " #-fmax-errors=10 -save-temps
+#$CPPFLAGS += " -static -O0 -g -std=#{$CPP_STANDARD} "
+
+CONFIG['warnflags'].gsub!('-Wshorten-64-to-32', '') # doesn't work except in Mac-patched gcc (4.2)
 CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
 CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
 
@@ -242,3 +252,4 @@ open('Makefile', 'a') do |f|
   clean_objs_paths = %w{data storage storage/dense storage/yale storage/list util}.map { |d| "#{d}/*.#{CONFIG["OBJEXT"]}" }
   f.write("CLEANOBJS := $(CLEANOBJS) #{clean_objs_paths.join(' ')}")
 end
+
