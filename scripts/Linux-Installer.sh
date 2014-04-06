@@ -26,8 +26,8 @@ if [ -x /usr/bin/zypper ] ; then
     sudo cpupower frequency-set -g performance
     echo
     echo "Going to install the following packages:"
-    echo "libatlas3 libatlas3-devel"
-    sudo zypper in -y libatlas3 libatlas3-devel
+    echo "libatlas3 libatlas3-devel blas-devel"
+    sudo zypper in -y libatlas3 libatlas3-devel blas-devel
 elif [ -f /usr/bin/yum ] ; then
     source ~/.bashrc
     echo ""
@@ -36,8 +36,8 @@ elif [ -f /usr/bin/yum ] ; then
     sudo cpupower frequency-set -g performance
     echo
     echo "Going to install the following packages:"
-    echo "libatlas3 and libatlas3-devel."
-    sudo yum install libatlas3 libatlas3-devel
+    echo "libatlas3 libatlas3-devel blas-devel"
+    sudo yum install libatlas3 libatlas3-devel blas-devel
 fi
 
 # Check to see whether the installer is apt-get
@@ -69,7 +69,7 @@ echo "Downloading Ruby 2.1.1 "
 
 if [ -x $HOME/.rvm/bin ] ; then
     echo "rvm use ruby-2.1.1"
-    source /home/magpie/.rvm/scripts/rvm
+    source $HOME/.rvm/scripts/rvm
     if [ -d $HOME/.rvm/gems/ruby-2.1.1/gems ]; then
         cd $HOME/.rvm/gems/ruby-2.1.1/gems ;
         if [ ! -d $HOME/.rvm/gems/ruby-2.1.1/gems/nmatrix ] ; then
