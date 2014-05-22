@@ -61,12 +61,19 @@ if [ -d /usr/include/atlas ] ; then
     echo "source ~/.bashrc"
 fi
 
-git clone https://github.com/SciRuby/nmatrix.git
-
-# If gem has a Gemfile then it will be installed
-if [ -f  nmatrix/Gemfile ] ; then
+if [ -d ../../nmatrix ]; then
+  echo "NMatrix found"
+  cd ..
+  if [ -f  Gemfile ] ; then
     cd nmatrix
     bundle install
     bundle exec rake compile -- --with-lapacklib
     bundle exec rake spec
+fi
+else
+  echo "This script was not run from the NMatrix scripts directory."
+  echo "Do you want to install NMatrix here and now? y/n"
+  if $1 = "n"; then
+    echo "ok bye!"
+  fi
 fi
