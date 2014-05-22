@@ -15,7 +15,6 @@
 # Check to see whether the installer is zypper.
 # If so, then install necessary packages.
 if [ -x /usr/bin/zypper ] ; then
-    source ~/.profile
     echo ""
     echo "Going to install the following packages:"
     echo "gcc gcc-c++ curl and cpupower."
@@ -27,7 +26,6 @@ if [ -x /usr/bin/zypper ] ; then
     echo "libatlas3 libatlas3-devel blas-devel"
     sudo zypper in -y libatlas3-devel blas-devel ruby-devel lapack-devel
 elif [ -f /usr/bin/yum ] ; then
-    source ~/.bashrc
     echo ""
     echo "Login as root, now..."
     sudo yum install gcc gcc-c++ curl cpupower
