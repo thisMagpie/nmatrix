@@ -14,9 +14,9 @@ end
 require 'rake'
 require "rake/extensiontask"
 Rake::ExtensionTask.new do |ext|
-    ext.name = 'nmatrix'          
+    ext.name = 'nmatrix'
     ext.ext_dir = 'ext/nmatrix' 
-    ext.lib_dir = 'lib/'             
+    ext.lib_dir = 'lib/'
     ext.source_pattern = "**/*.{c,cpp, h}" 
 end
 
@@ -109,16 +109,8 @@ def run *cmd
 end
 
 namespace :spec do
-  # partial-loads-ok and undef-value-errors necessary to ignore
-  # spurious (and eminently ignorable) warnings from the ruby
-  # interpreter
 
   RSPEC_CMD = [ 'ruby', '-S', 'rspec', '-Ilib:ext', SPECDIR.to_s ]
-
-  #desc "Run the spec for generator.rb"
-  #task :generator do |task|
-  #  run 'rspec spec/generator_spec.rb'
-  #end
 
   desc "Run specs under GDB."
   task :gdb => [ :compile ] do |task|
