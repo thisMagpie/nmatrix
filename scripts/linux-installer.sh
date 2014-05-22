@@ -56,11 +56,11 @@ echo "Installation for $s complete!"
 echo "Setting PATHS"
 
 if [ -d /usr/include/atlas ] ; then
-    echo "Setting CPLUS_INCLUDE_PATH..."
-    echo "export CPLUS_INCLUDE_PATH=/usr/include/atlas" >> ~/.profile
-    echo "Setting C_INCLUDE_PATH..."
-    echo "export C_INCLUDE_PATH=/usr/include/atlas" >> ~/.profile
-    echo "source ~/.profile" >> ~/.bashrc
+    echo "Setting CPLUS_INCLUDE_PATH in ~/.bashrc"
+    echo "export CPLUS_INCLUDE_PATH=/usr/include/atlas" >> ~/.bashrc
+    echo "Setting C_INCLUDE_PATH in ~/.bashrc"
+    echo "export C_INCLUDE_PATH=/usr/include/atlas" >> ~/.bashrc
+    echo "source ~/.bashrc"
 fi
 
 git clone https://github.com/SciRuby/nmatrix.git
