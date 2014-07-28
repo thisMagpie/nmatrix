@@ -566,7 +566,7 @@ class NMatrix
       new_cap = matrices.inject(self.capacity - self.shape[0]) do |total,m|
         total + m.capacity - m.shape[0]
       end - self.shape[0] + new_shape[0]
-      opts = {capacity: self.new_cap}.merge(opts)
+      opts = {capacity: new_cap}.merge(opts)
     end
 
     # Do the actual construction.
@@ -817,6 +817,18 @@ class NMatrix
     else
       super(method)
     end
+  end
+
+
+  #
+  # call-seq:
+  #     inject -> symbol
+  #
+  # This overrides the inject function to use map_stored for yale matrices
+  #
+  def inject(sym)
+    return super(sym) unless self.yale?
+    return self.map_stored.inject(sym)
   end
 
 
