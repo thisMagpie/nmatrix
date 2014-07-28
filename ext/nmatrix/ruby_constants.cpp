@@ -85,6 +85,7 @@ ID  nm_rb_dtype,
 VALUE cNMatrix,
       cNMatrix_IO,
       cNMatrix_IO_Matlab,
+<<<<<<< HEAD
       cNVector,
       cNMatrix_YaleFunctions,
       cNMatrix_BLAS,
@@ -92,6 +93,15 @@ VALUE cNMatrix,
 
       cNMatrix_GC_holder,
       nm_eDataTypeError,
+=======
+			cNMatrix_YaleFunctions,
+			cNMatrix_BLAS,
+			cNMatrix_LAPACK,
+
+      cNMatrix_GC_holder,
+
+			nm_eDataTypeError,
+>>>>>>> master
       nm_eConvergenceError,
       nm_eStorageTypeError,
       nm_eShapeError,

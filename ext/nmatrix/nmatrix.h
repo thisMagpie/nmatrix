@@ -53,7 +53,9 @@
 	#endif
 #endif
 
-#include "nm_memory.h"
+#ifdef __cplusplus
+  #include "nm_memory.h"
+#endif
 
 /*
  * Macros
@@ -178,8 +180,13 @@
     size_t      dim;                \
     size_t*     shape;              \
     size_t*     offset;             \
+<<<<<<< HEAD
+    int         count;              \
+    STORAGE*    src;              
+=======
 	  int			    count;              \
-	  STORAGE*		src;              
+	  STORAGE*		src;
+>>>>>>> f420e83de7f94bebef6eb744dedea67706ddcd6c
   #define NM_DEF_STORAGE_CHILD_STRUCT_PRE(name)  typedef struct NM_ ## name { \
                                                     NM_DEF_STORAGE_ELEMENTS;
 
@@ -288,15 +295,15 @@ NM_DEF_STRUCT_POST(NMATRIX);  // };
 
 /* Structs for dealing with VALUEs in use so that they don't get GC'd */
 
-typedef struct __NM_GC_LL_NODE {
-  VALUE* val;
-  size_t n;
-  __NM_GC_LL_NODE* next;
-} nm_gc_ll_node;
+NM_DEF_STRUCT_PRE(NM_GC_LL_NODE);       // struct NM_GC_LL_NODE {
+  VALUE* val;                           //   VALUE* val;
+  size_t n;                             //   size_t n;
+  NM_DECL_STRUCT(NM_GC_LL_NODE*, next); //   NM_GC_LL_NODE* next;
+NM_DEF_STRUCT_POST(NM_GC_LL_NODE);      // };
 
-typedef struct __NM_GC_HOLDER {
-  __NM_GC_LL_NODE* start;
-} nm_gc_holder;
+NM_DEF_STRUCT_PRE(NM_GC_HOLDER);        // struct NM_GC_HOLDER {
+  NM_DECL_STRUCT(NM_GC_LL_NODE*, start); //  NM_GC_LL_NODE* start;
+NM_DEF_STRUCT_POST(NM_GC_HOLDER);       // };
 
 #define NM_MAX_RANK 15
 
@@ -328,7 +335,7 @@ typedef struct __NM_GC_HOLDER {
 #define NM_DENSE_ELEMENTS(val)  (NM_STORAGE_DENSE(val)->elements)
 #define NM_SIZEOF_DTYPE(val)    (DTYPE_SIZES[NM_DTYPE(val)])
 #define NM_REF(val,slice)      (RefFuncs[NM_STYPE(val)]( NM_STORAGE(val), slice, NM_SIZEOF_DTYPE(val) ))
-    
+
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
 #define NM_MIN(a,b) (((a)>(b))?(b):(a))
 #define NM_SWAP(a,b,tmp) {(tmp)=(a);(a)=(b);(b)=(tmp);}
@@ -346,8 +353,8 @@ typedef struct __NM_GC_HOLDER {
   (rb_obj_is_kind_of(obj, cNVector) == Qtrue)
 
 #define RB_P(OBJ) \
-	rb_funcall(rb_stderr, rb_intern("print"), 1, rb_funcall(OBJ, rb_intern("object_id"), 0)); \
-	rb_funcall(rb_stderr, rb_intern("puts"), 1, rb_funcall(OBJ, rb_intern("inspect"), 0));
+  rb_funcall(rb_stderr, rb_intern("print"), 1, rb_funcall(OBJ, rb_intern("object_id"), 0)); \
+  rb_funcall(rb_stderr, rb_intern("puts"), 1, rb_funcall(OBJ, rb_intern("inspect"), 0));
 
 
 #ifdef __cplusplus
@@ -365,33 +372,34 @@ typedef VALUE (*METHOD)(...);
 extern "C" {
 #endif
 
-	void Init_nmatrix();
+  void Init_nmatrix();
 
-	// External API
-	VALUE rb_nmatrix_dense_create(NM_DECL_ENUM(dtype_t, dtype), size_t* shape, size_t dim, void* elements, size_t length);
-	VALUE rb_nvector_dense_create(NM_DECL_ENUM(dtype_t, dtype), void* elements, size_t length);
+  // External API
+  VALUE rb_nmatrix_dense_create(NM_DECL_ENUM(dtype_t, dtype), size_t* shape, size_t dim, void* elements, size_t length);
+  VALUE rb_nvector_dense_create(NM_DECL_ENUM(dtype_t, dtype), void* elements, size_t length);
 
-	NM_DECL_ENUM(dtype_t, nm_dtype_guess(VALUE));   // (This is a function)
-	NM_DECL_ENUM(dtype_t, nm_dtype_min(VALUE));
+  NM_DECL_ENUM(dtype_t, nm_dtype_guess(VALUE));
+  NM_DECL_ENUM(dtype_t, nm_dtype_min(VALUE));
 
   // Non-API functions needed by other cpp files.
-	NMATRIX* nm_create(NM_DECL_ENUM(stype_t, stype), STORAGE* storage);
+  NMATRIX* nm_create(NM_DECL_ENUM(stype_t, stype), STORAGE* storage);
   NMATRIX* nm_cast_with_ctype_args(NMATRIX* self, NM_DECL_ENUM(stype_t, new_stype), NM_DECL_ENUM(dtype_t, new_dtype), void* init_ptr);
-	VALUE    nm_cast(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol, VALUE init);
-	void     nm_mark(NMATRIX* mat);
-	void     nm_delete(NMATRIX* mat);
-	void     nm_delete_ref(NMATRIX* mat);
+  VALUE    nm_cast(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol, VALUE init);
+  void     nm_mark(NMATRIX* mat);
+  void     nm_delete(NMATRIX* mat);
+  void     nm_delete_ref(NMATRIX* mat);
   void     nm_register_values(VALUE* vals, size_t n);
+  void     nm_register_value(VALUE* val);
+  void     nm_unregister_value(VALUE* val);
   void     nm_unregister_values(VALUE* vals, size_t n);
-  void     nm_register_value(VALUE& val);
-  void     nm_unregister_value(VALUE& val);
-  void     nm_register_storage(nm::stype_t stype, const STORAGE* storage);
-  void     nm_unregister_storage(nm::stype_t stype, const STORAGE* storage);
+  void     nm_register_storage(NM_DECL_ENUM(stype_t, stype), const STORAGE* storage);
+  void     nm_unregister_storage(NM_DECL_ENUM(stype_t, stype), const STORAGE* storage);
   void     nm_register_nmatrix(NMATRIX* nmatrix);
   void     nm_unregister_nmatrix(NMATRIX* nmatrix);
-  void	   nm_completely_unregister_value(VALUE& val);
+  void	   nm_completely_unregister_value(VALUE* val);
 #ifdef __cplusplus
 }
+
 #endif
 
 #endif // NMATRIX_H

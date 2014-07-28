@@ -25,14 +25,9 @@
 # Basic tests for NMatrix. These should load first, as they're
 # essential to NMatrix operation.
 #
-
-require File.dirname(__FILE__) + "/spec_helper.rb"
+require 'spec_helper'
 
 describe NMatrix do
-  #after :each do
-  #  GC.start
-  #end
-
   it "creates a matrix with the new constructor" do
     n = NMatrix.new([2,2], [0,1,2,3], dtype: :int64)
     expect(n.shape).to eq([2,2])
@@ -396,6 +391,18 @@ describe 'NMatrix' do
     end
   end
 
+  context "#rank" do
+    it "should get the rank of a 2-dimensional matrix" do
+      n = NMatrix.seq([2,3])
+      expect(n.rank(0, 0)).to eq(N[[0,1,2]])
+    end
+
+    it "should raise an error when the rank is out of bounds" do
+      n = NMatrix.seq([2,3])
+      expect { n.rank(2, 0) }.to raise_error(RangeError)
+    end
+  end
+
   context "#reshape" do
     it "should change the shape of a matrix without the contents changing" do
       n = NMatrix.seq(4)+1
@@ -555,4 +562,20 @@ describe 'NMatrix' do
       end
     end
   end
+
+  context "#inject" do
+    it "should sum columns of yale matrix correctly" do
+      n = NMatrix.new([4, 3], stype: :yale, default: 0)
+      n[0,0] = 1
+      n[1,1] = 2
+      n[2,2] = 4
+      n[3,2] = 8
+      column_sums = []
+      n.cols.times do |i|
+        column_sums << n.col(i).inject(:+)
+      end
+      expect(column_sums).to eq([1, 2, 12])
+    end
+  end
+
 end
