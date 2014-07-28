@@ -18,15 +18,9 @@ require 'rake'
 require "rake/extensiontask"
 Rake::ExtensionTask.new do |ext|
     ext.name = 'nmatrix'
-<<<<<<< HEAD
-    ext.ext_dir = 'ext/nmatrix' 
-    ext.lib_dir = 'lib/'
-    ext.source_pattern = "**/*.{c,cpp, h}" 
-=======
     ext.ext_dir = 'ext/nmatrix'
     ext.lib_dir = 'lib/'
     ext.source_pattern = "**/*.{c,cpp, h}"
->>>>>>> f420e83de7f94bebef6eb744dedea67706ddcd6c
 end
 
 gemspec = eval(IO.read("nmatrix.gemspec"))
